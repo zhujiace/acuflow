@@ -1,0 +1,8 @@
+{
+  "enabled": false,
+  "provider": "http",
+  "endpoint": "",
+  "model": "",
+  "timeoutMs": 15000,
+  "routing": {}
+}

@@ -54,3 +54,25 @@ AcuFlow 的诊疗流程与知识可以由医学人员在不改代码的情况下
 - 说“驳回/继续讨论” → `flow_review(reject)`。
 
 对已确认节点的回溯修改用 `flow_amend`，下游节点会被标记为 `stale`。
+
+## 6. 影像分析（接口已保留，默认未启用）
+
+`imaging_analyze` 工具已提供，但**默认不启用**：仅当 `.opencode/acuflow/imaging.json` 中 `enabled: true` 且配置了 `endpoint` 时，才会真正调用影像模型端点；否则只返回“未启用”，不进行任何外部调用。
+
+配置字段：
+
+| 字段 | 说明 |
+|---|---|
+| `enabled` | 是否启用（默认 false） |
+| `provider` | 端点类型，如 `http`（预留 `local` 等） |
+| `endpoint` | 影像模型 HTTP 端点，接收 `{ model, provider, image, modality, node, context }`，返回 `{ findings, impression? }` |
+| `model` | 端点内的模型标识 |
+| `timeoutMs` | 请求超时 |
+| `routing` | 预留：按节点路由到 online/local |
+
+`image` 目前接受本地文件路径或 URL。启用后，工具会把结果以 `kind=imaging` 写入 `clinical_data`。
+
+## 7. 审计与证据回链
+
+- 每个节点的确认/修改/驳回/回溯都会写入 `audit_log` 与 `node_revision`。
+- agent 可用 `medical_audit`（可按 `nodeKey` 过滤）查看本 episode 的审计与各节点修订历史；用 `clinical_query` 回看检验/影像等原始记录。

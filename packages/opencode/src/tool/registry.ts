@@ -19,9 +19,11 @@ import {
   FlowReviewTool,
   FlowSubmitDraftTool,
   MedCalcTool,
+  MedicalAuditTool,
   PatientGetTool,
   PatientUpdateTool,
 } from "./medical"
+import { ImagingAnalyzeTool } from "./imaging"
 import * as Tool from "./tool"
 import { Config } from "@/config/config"
 import { type ToolContext as PluginToolContext, type ToolDefinition } from "@opencode-ai/plugin"
@@ -120,6 +122,8 @@ const layer = Layer.effect(
     const flowReview = yield* FlowReviewTool
     const flowMarkUnavailable = yield* FlowMarkUnavailableTool
     const medCalc = yield* MedCalcTool
+    const medicalAudit = yield* MedicalAuditTool
+    const imagingAnalyze = yield* ImagingAnalyzeTool
     const agent = yield* Agent.Service
 
     const state = yield* InstanceState.make<State>(
@@ -229,6 +233,8 @@ const layer = Layer.effect(
           flowReview: Tool.init(flowReview),
           flowMarkUnavailable: Tool.init(flowMarkUnavailable),
           medCalc: Tool.init(medCalc),
+          medicalAudit: Tool.init(medicalAudit),
+          imagingAnalyze: Tool.init(imagingAnalyze),
         })
 
         return {
@@ -252,6 +258,8 @@ const layer = Layer.effect(
             tool.flowReview,
             tool.flowMarkUnavailable,
             tool.medCalc,
+            tool.medicalAudit,
+            tool.imagingAnalyze,
           ],
           task: tool.task,
           read: tool.read,

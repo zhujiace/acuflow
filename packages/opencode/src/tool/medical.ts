@@ -571,3 +571,30 @@ export const MedCalcTool = Tool.define(
     }
   }),
 )
+
+export const MedicalAuditTool = Tool.define(
+  "medical_audit",
+  Effect.gen(function* () {
+    const store = yield* MedicalStore.Service
+    return {
+      description:
+        "查看本 episode 的审计记录与各节点修订历史（证据回链）。可用 nodeKey 只看某个节点。",
+      parameters: Schema.Struct({ nodeKey: Schema.optional(Schema.String) }),
+      execute: (params: { nodeKey?: string }, ctx: Tool.Context) =>
+        Effect.gen(function* () {
+          yield* allow(ctx, "medical_audit")
+          const episode = yield* store.getEpisodeBySession(ctx.sessionID)
+          if (!episode) return ok("无进行中的 episode", { audit: [], revisions: [] })
+          const audit = yield* store.listAudit(episode.id)
+          const nodes = yield* store.listNodes(episode.id)
+          const target = params.nodeKey ? nodes.filter((node) => node.nodeKey === params.nodeKey) : nodes
+          const revisions = yield* Effect.forEach(target, (node) =>
+            store
+              .listRevisions(node.id)
+              .pipe(Effect.map((rows) => rows.map((row) => ({ node: node.nodeKey, ...row })))),
+          )
+          return ok("审计与修订历史", { audit, revisions: revisions.flat() })
+        }).pipe(Effect.orDie),
+    }
+  }),
+)

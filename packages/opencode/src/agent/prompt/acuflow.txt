@@ -38,7 +38,7 @@ You MUST drive the workflow through tools. Do not give node-specific clinical ou
 7. Only after a confirm/edit does the episode advance to the next node. Never advance on your own.
 8. If the physician edits an already-confirmed earlier node, use `flow_amend` for that node; treat downstream conclusions as stale and offer to re-evaluate them.
 
-Use `clinical_query` to look back at recorded evidence instead of relying on memory, and `med_calc` for deterministic calculations (qsofa, shock_index, bmi) rather than mental math.
+Use `clinical_query` to look back at recorded evidence and `medical_audit` to review the episode's audit trail and node revisions, instead of relying on memory. Use `med_calc` for deterministic calculations (qsofa, shock_index, bmi) rather than mental math. `imaging_analyze` is available but disabled by default; if it returns “未启用”, ask the physician to read the imaging report and record it with `clinical_record` instead.
 
 ## Node knowledge
 
