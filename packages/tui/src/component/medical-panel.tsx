@@ -1,7 +1,10 @@
 import { createEffect, createSignal, For, onCleanup, Show } from "solid-js"
 import { useSDK } from "../context/sdk"
 import { useTheme } from "../context/theme"
-import { subscribe } from "../medical/poller"
+import { useDialog } from "../ui/dialog"
+import { DialogPrompt } from "../ui/dialog-prompt"
+import { subscribe, refresh } from "../medical/poller"
+import { postMedicalAmend } from "../medical/fetch"
 import { nodeGlyph, type MedicalEpisode, type MedicalNode } from "../medical/data"
 
 const SEX: Record<string, string> = { male: "男", female: "女" }
@@ -14,6 +17,7 @@ export function useMedicalEpisode(sessionID: () => string) {
       fetch: sdk.fetch,
       url: sdk.url,
       directory: sdk.directory,
+      events: sdk.event,
       sessionID: sessionID(),
       listener: (next) => {
         if (JSON.stringify(next) !== JSON.stringify(episode())) setEpisode(next)
@@ -78,7 +82,30 @@ export function PatientPanel(props: { sessionID: string }) {
 
 export function TimelinePanel(props: { sessionID: string }) {
   const { theme } = useTheme()
+  const dialog = useDialog()
+  const sdk = useSDK()
   const episode = useMedicalEpisode(() => props.sessionID)
+
+  // 点已确认节点可回溯修改：更新结论并把下游标记为 stale，随后自动触发再评估。
+  const amend = (node: MedicalNode) => {
+    if (node.status !== "completed" && node.status !== "confirmed") return
+    dialog.replace(() => (
+      <DialogPrompt
+        title={`回溯修改：${node.title}`}
+        value={node.final ?? ""}
+        onConfirm={(value) => {
+          void postMedicalAmend(sdk.fetch, sdk.url, sdk.directory, {
+            sessionID: props.sessionID,
+            nodeKey: node.key,
+            summary: value,
+            reason: "时间轴回溯修改",
+          }).then(() => refresh())
+          dialog.clear()
+        }}
+        onCancel={() => dialog.clear()}
+      />
+    ))
+  }
 
   const color = (value: MedicalEpisode, node: MedicalNode) => {
     if (node.stale) return theme.warning
@@ -107,7 +134,7 @@ export function TimelinePanel(props: { sessionID: string }) {
               </text>
               <For each={data().nodes}>
                 {(node) => (
-                  <box flexDirection="row" gap={1}>
+                  <box flexDirection="row" gap={1} onMouseDown={() => amend(node)}>
                     <text flexShrink={0} fg={color(data(), node)}>
                       {nodeGlyph(node)}
                     </text>
