@@ -598,3 +598,45 @@ export const MedicalAuditTool = Tool.define(
     }
   }),
 )
+
+export const FlowAmendTool = Tool.define(
+  "flow_amend",
+  Effect.gen(function* () {
+    const store = yield* MedicalStore.Service
+    const flow = yield* MedicalFlow.Service
+    return {
+      description:
+        "回溯修改某个已确认节点的最终结论（例如检验复读更正）。该节点之后的已确认节点会被标记为 stale，需要重新评估。",
+      parameters: Schema.Struct({
+        nodeKey: Schema.String.annotate({ description: "要修改的节点，如 labs、imaging_consult" }),
+        summary: Schema.String,
+        fields: Schema.optional(Schema.Record(Schema.String, Schema.Unknown)),
+        reason: Schema.optional(Schema.String),
+      }),
+      execute: (
+        params: { nodeKey: string; summary: string; fields?: Record<string, unknown>; reason?: string },
+        ctx: Tool.Context,
+      ) =>
+        Effect.gen(function* () {
+          yield* allow(ctx, "flow_amend")
+          const episode = yield* store.getEpisodeBySession(ctx.sessionID)
+          if (!episode) return ok("无进行中的 episode", statusView(undefined))
+          const node = yield* store.getNode(episode.id, params.nodeKey as Medical.NodeKey)
+          if (!node) return ok("未找到该节点", { amended: false, nodeKey: params.nodeKey })
+          const result = yield* flow.amend({
+            nodeID: node.id,
+            output: {
+              fields: (params.fields ?? {}) as Record<string, Schema.Json>,
+              summary: params.summary,
+            },
+            reason: params.reason,
+          })
+          return ok(`已回溯修改：${params.nodeKey}`, {
+            amended: true,
+            node: result.nodeKey,
+            outputFinal: result.outputFinal,
+          })
+        }).pipe(Effect.orDie),
+    }
+  }),
+)

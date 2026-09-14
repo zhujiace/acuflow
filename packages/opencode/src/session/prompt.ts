@@ -184,6 +184,7 @@ const layer = Layer.effect(
         `待补充信息：${missing.length ? missing.join("、") : "无"}`,
         `无法获取：${(node.unavailable ?? []).join("、") || "无"}`,
         `产出草案：${node.output_agent ? "已提交，等待医生确认" : "尚未提交"}`,
+        "回溯修改：若医生要更正某个已确认节点，调用 flow_amend(nodeKey, summary, fields?)，其下游已确认节点会被标记为 stale 并需重新评估。",
         "</acuflow_state>",
         missing.length
           ? "注意：以上“待补充信息”非空时，本轮只应针对这些项向医生追问，禁止提交草案或进入下一节点。"

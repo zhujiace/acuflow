@@ -197,6 +197,36 @@ describe("MedicalStore + MedicalFlow", () => {
     }),
   )
 
+  it.effect("repeated draft submissions keep a single draft revision", () =>
+    Effect.gen(function* () {
+      const { store, episode } = yield* openEpisode("draft-dedupe")
+      const flow = yield* MedicalFlow.Service
+      const status = yield* flow.start(episode.id)
+      yield* fill(flow, episode.id, status.definition.requiredInputs)
+      yield* flow.submitDraft({ episodeID: episode.id, output: draft("草案一") })
+      yield* flow.submitDraft({ episodeID: episode.id, output: draft("草案二") })
+      const revisions = yield* store.listRevisions((yield* store.getNode(episode.id, "triage"))!.id)
+      expect(revisions.map((row) => row.action)).toEqual(["draft"])
+      expect(revisions[0]?.output?.summary).toBe("草案一")
+    }),
+  )
+
+  it.effect("revision numbers stay strictly increasing across confirm and amend", () =>
+    Effect.gen(function* () {
+      const { store, episode } = yield* openEpisode("revision-order")
+      const flow = yield* MedicalFlow.Service
+      const triage = yield* flow.start(episode.id)
+      yield* fill(flow, episode.id, triage.definition.requiredInputs)
+      yield* flow.submitDraft({ episodeID: episode.id, output: draft("分诊") })
+      yield* flow.review({ episodeID: episode.id, decision: "confirm" })
+      const triageNode = yield* store.getNode(episode.id, "triage")
+      yield* flow.amend({ nodeID: triageNode!.id, output: draft("分诊修正"), reason: "更正" })
+      const revisions = yield* store.listRevisions(triageNode!.id)
+      expect(revisions.map((row) => row.revision)).toEqual([1, 2, 3])
+      expect(new Set(revisions.map((row) => row.revision)).size).toBe(3)
+    }),
+  )
+
   it.effect("rejects a second episode for the same session", () =>
     Effect.gen(function* () {
       const { store, patient, episode } = yield* openEpisode("unique")

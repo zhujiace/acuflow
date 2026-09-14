@@ -365,13 +365,16 @@ const layer = Layer.effect(
         outputAgent: input.output,
         status: "ready_for_review",
       })
-      yield* store.appendRevision({
-        nodeID: current.node.id,
-        revision: current.node.revision,
-        output: input.output,
-        actor: "agent",
-        action: "draft",
-      })
+      const revisions = yield* store.listRevisions(current.node.id)
+      if (!revisions.some((row) => row.revision === current.node.revision && row.action === "draft")) {
+        yield* store.appendRevision({
+          nodeID: current.node.id,
+          revision: current.node.revision,
+          output: input.output,
+          actor: "agent",
+          action: "draft",
+        })
+      }
       yield* events.publish(MedicalEvent.NodeReviewRequested, {
         episodeID: input.episodeID,
         timestamp: Date.now(),
@@ -412,13 +415,15 @@ const layer = Layer.effect(
         }
       }
       if (input.decision === "reject") {
+        const nextRevision = current.node.revision + 1
         const next = yield* store.replaceNode(current.node, {
           status: "gathering",
           rejectReason: input.reason ?? null,
+          revision: nextRevision,
         })
         yield* store.appendRevision({
           nodeID: current.node.id,
-          revision: current.node.revision + 1,
+          revision: nextRevision,
           output: current.node.outputAgent,
           actor: "doctor",
           action: "reject",
@@ -447,6 +452,7 @@ const layer = Layer.effect(
         return yield* new InvalidTransitionError({ message: `node ${current.node.nodeKey} has no output to settle` })
       }
       const edited = input.decision === "edit"
+      const nextRevision = current.node.revision + 1
       const next = yield* store.replaceNode(current.node, {
         outputFinal: finalOutput,
         outputDiff: edited ? JSON.stringify({ agent: current.node.outputAgent, final: finalOutput }) : null,
@@ -455,11 +461,12 @@ const layer = Layer.effect(
         confirmedAt: Date.now(),
         status: "completed",
         stale: false,
+        revision: nextRevision,
         timeEnded: Date.now(),
       })
       yield* store.appendRevision({
         nodeID: current.node.id,
-        revision: current.node.revision + 1,
+        revision: nextRevision,
         output: finalOutput,
         actor: "doctor",
         action: edited ? "edit" : "confirm",
@@ -523,10 +530,11 @@ const layer = Layer.effect(
         downstream,
         (item) =>
           Effect.gen(function* () {
-            yield* store.replaceNode(item, { stale: true })
+            const staleRevision = item.revision + 1
+            yield* store.replaceNode(item, { stale: true, revision: staleRevision })
             yield* store.appendRevision({
               nodeID: item.id,
-              revision: item.revision + 1,
+              revision: staleRevision,
               output: item.outputFinal,
               actor: "system",
               action: "stale",

@@ -15,6 +15,7 @@ import {
   ClinicalRecordTool,
   EpisodeStartTool,
   EpisodeStatusTool,
+  FlowAmendTool,
   FlowMarkUnavailableTool,
   FlowReviewTool,
   FlowSubmitDraftTool,
@@ -121,6 +122,7 @@ const layer = Layer.effect(
     const flowSubmitDraft = yield* FlowSubmitDraftTool
     const flowReview = yield* FlowReviewTool
     const flowMarkUnavailable = yield* FlowMarkUnavailableTool
+    const flowAmend = yield* FlowAmendTool
     const medCalc = yield* MedCalcTool
     const medicalAudit = yield* MedicalAuditTool
     const imagingAnalyze = yield* ImagingAnalyzeTool
@@ -232,6 +234,7 @@ const layer = Layer.effect(
           flowSubmitDraft: Tool.init(flowSubmitDraft),
           flowReview: Tool.init(flowReview),
           flowMarkUnavailable: Tool.init(flowMarkUnavailable),
+          flowAmend: Tool.init(flowAmend),
           medCalc: Tool.init(medCalc),
           medicalAudit: Tool.init(medicalAudit),
           imagingAnalyze: Tool.init(imagingAnalyze),
@@ -257,6 +260,7 @@ const layer = Layer.effect(
             tool.flowSubmitDraft,
             tool.flowReview,
             tool.flowMarkUnavailable,
+            tool.flowAmend,
             tool.medCalc,
             tool.medicalAudit,
             tool.imagingAnalyze,
