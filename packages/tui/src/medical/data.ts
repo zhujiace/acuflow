@@ -29,6 +29,41 @@ export type MedicalEpisode = {
   nodes: MedicalNode[]
 }
 
+export type ClinicalEvidence = {
+  id: string
+  kind: string
+  label: string
+  status: string
+  source: string | null
+  collectedAt: number
+  negative: boolean
+  payload: Record<string, unknown>
+}
+
+export type AuditEvidence = {
+  id: string
+  actor: string
+  action: string
+  target: string | null
+  time: number
+}
+
+export type RevisionEvidence = {
+  id: string
+  node: string
+  revision: number
+  actor: string
+  action: string
+  reason: string | null
+  time: number
+}
+
+export type MedicalEvidence = {
+  clinical: ClinicalEvidence[]
+  audit: AuditEvidence[]
+  revisions: RevisionEvidence[]
+}
+
 export function nodeGlyph(node: MedicalNode): string {
   if (node.stale) return "⚠"
   if (node.status === "completed") return "✓"

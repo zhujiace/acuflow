@@ -1,4 +1,4 @@
-import type { MedicalEpisode } from "./data"
+import type { MedicalEpisode, MedicalEvidence } from "./data"
 
 function buildHeaders(directory: string | undefined, json: boolean) {
   const headers: Record<string, string> = {}
@@ -23,6 +23,27 @@ export async function fetchEpisode(
     })
     if (!response.ok) return undefined
     const data = (await response.json()) as MedicalEpisode | null
+    return data ?? undefined
+  } catch {
+    return undefined
+  }
+}
+
+export async function fetchEvidence(
+  fetchFn: typeof fetch,
+  url: string,
+  directory: string | undefined,
+  sessionID: string,
+): Promise<MedicalEvidence | undefined> {
+  try {
+    const target = new URL("/medical/evidence", url)
+    target.searchParams.set("sessionID", sessionID)
+    const response = await fetchFn(target.toString(), {
+      headers: buildHeaders(directory, false),
+      signal: AbortSignal.timeout(3000),
+    })
+    if (!response.ok) return undefined
+    const data = (await response.json()) as MedicalEvidence | null
     return data ?? undefined
   } catch {
     return undefined

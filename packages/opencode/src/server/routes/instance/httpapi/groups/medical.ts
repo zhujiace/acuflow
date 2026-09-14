@@ -38,6 +38,41 @@ const View = Schema.Struct({
   nodes: Schema.Array(NodeView),
 }).annotate({ identifier: "Medical.View" })
 
+const ClinicalEvidence = Schema.Struct({
+  id: Schema.String,
+  kind: Schema.String,
+  label: Schema.String,
+  status: Schema.String,
+  source: Schema.NullOr(Schema.String),
+  collectedAt: Schema.Number,
+  negative: Schema.Boolean,
+  payload: Schema.Record(Schema.String, Schema.Unknown),
+})
+
+const AuditEvidence = Schema.Struct({
+  id: Schema.String,
+  actor: Schema.String,
+  action: Schema.String,
+  target: Schema.NullOr(Schema.String),
+  time: Schema.Number,
+})
+
+const RevisionEvidence = Schema.Struct({
+  id: Schema.String,
+  node: Schema.String,
+  revision: Schema.Number,
+  actor: Schema.String,
+  action: Schema.String,
+  reason: Schema.NullOr(Schema.String),
+  time: Schema.Number,
+})
+
+const Evidence = Schema.Struct({
+  clinical: Schema.Array(ClinicalEvidence),
+  audit: Schema.Array(AuditEvidence),
+  revisions: Schema.Array(RevisionEvidence),
+}).annotate({ identifier: "Medical.Evidence" })
+
 const ReviewPayload = Schema.Struct({
   sessionID: Schema.String,
   decision: Schema.Literals(["confirm", "edit", "reject"]),
@@ -84,11 +119,23 @@ export const MedicalApi = HttpApi.make("medical").add(
       HttpApiEndpoint.post("amend", "/medical/amend", {
         payload: AmendPayload,
         success: described(Schema.NullOr(View), "Updated medical episode view"),
-      }      ).annotateMerge(
+      }).annotateMerge(
         OpenApi.annotations({
           identifier: "medical.amend",
           summary: "Amend a settled node output",
           description: "Retroactively edit a settled node; downstream nodes are marked stale.",
+        }),
+      ),
+    )
+    .add(
+      HttpApiEndpoint.get("evidence", "/medical/evidence", {
+        query: Schema.Struct({ sessionID: Schema.String }),
+        success: described(Schema.NullOr(Evidence), "Clinical evidence, audit trail and node revisions"),
+      }).annotateMerge(
+        OpenApi.annotations({
+          identifier: "medical.evidence",
+          summary: "Get medical evidence and audit",
+          description: "Return recorded clinical data, the audit trail and node revision history for a session.",
         }),
       ),
     )

@@ -3,8 +3,10 @@ import { useSDK } from "../context/sdk"
 import { useTheme } from "../context/theme"
 import { useDialog } from "../ui/dialog"
 import { DialogPrompt } from "../ui/dialog-prompt"
+import { useBindings } from "../keymap"
 import { subscribe, refresh } from "../medical/poller"
 import { postMedicalAmend } from "../medical/fetch"
+import { DialogEvidence } from "./dialog-evidence"
 import { nodeGlyph, type MedicalEpisode, type MedicalNode } from "../medical/data"
 
 const SEX: Record<string, string> = { male: "男", female: "女" }
@@ -38,8 +40,22 @@ function demographics(value: MedicalEpisode) {
 
 export function PatientPanel(props: { sessionID: string }) {
   const { theme } = useTheme()
+  const dialog = useDialog()
   const episode = useMedicalEpisode(() => props.sessionID)
   const current = (value: MedicalEpisode) => value.nodes.find((node) => node.key === value.episode.currentNode)
+  const openEvidence = () => dialog.replace(() => <DialogEvidence sessionID={props.sessionID} />)
+
+  useBindings(() => ({
+    commands: [
+      {
+        name: "medical.evidence",
+        title: "证据与审计",
+        category: "AcuFlow",
+        run: openEvidence,
+      },
+    ],
+    bindings: [{ key: "ctrl+g", desc: "证据与审计", group: "AcuFlow", cmd: () => openEvidence() }],
+  }))
 
   return (
     <Show when={episode()}>
@@ -63,6 +79,9 @@ export function PatientPanel(props: { sessionID: string }) {
               <text fg={theme.text}>{data().episode.title || "（未命名）"}</text>
               <text fg={theme.textMuted}>
                 节点：{current(data())?.title ?? (data().episode.status === "closed" ? "已完成" : "—")}
+              </text>
+              <text fg={theme.primary} onMouseUp={openEvidence}>
+                证据 / 审计 （ctrl+g）
               </text>
             </box>
             <Show when={(current(data())?.missing.length ?? 0) > 0}>

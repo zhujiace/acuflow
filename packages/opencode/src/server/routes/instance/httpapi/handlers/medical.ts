@@ -1,7 +1,7 @@
 import { Database } from "@opencode-ai/core/database/database"
 import { MedicalFlow } from "@opencode-ai/core/medical/flow"
 import { MedicalStore } from "@opencode-ai/core/medical/store"
-import { EpisodeNodeTable, EpisodeTable, PatientTable } from "@opencode-ai/core/medical/sql"
+import { EpisodeNodeTable, EpisodeTable, PatientTable, AuditLogTable, ClinicalDataTable, NodeRevisionTable } from "@opencode-ai/core/medical/sql"
 import { SessionSchema } from "@opencode-ai/core/session/schema"
 import { SessionTable } from "@opencode-ai/core/session/sql"
 import { ModelV2 } from "@opencode-ai/core/model"
@@ -9,7 +9,7 @@ import { ProviderV2 } from "@opencode-ai/core/provider"
 import type { Medical } from "@opencode-ai/schema/medical"
 import { SessionPrompt } from "@/session/prompt"
 import { InstanceRef } from "@/effect/instance-ref"
-import { eq } from "drizzle-orm"
+import { desc, eq } from "drizzle-orm"
 import { Cause, Effect, Schema, Scope } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
 import { InstanceHttpApi } from "../api"
@@ -200,6 +200,69 @@ export const medicalHandlers = HttpApiBuilder.group(InstanceHttpApi, "medical", 
       return row ? yield* buildView(row) : null
     })
 
-    return handlers.handle("view", view).handle("review", review).handle("amend", amend)
+    const evidence = Effect.fn("MedicalHttpApi.evidence")(function* (ctx: { query: { sessionID: string } }) {
+      const episode = yield* episodeRow(ctx.query.sessionID)
+      if (!episode) return null
+      const clinical = yield* db
+        .select()
+        .from(ClinicalDataTable)
+        .where(eq(ClinicalDataTable.episode_id, episode.id))
+        .orderBy(desc(ClinicalDataTable.time_created))
+        .all()
+        .pipe(Effect.orDie)
+      const audit = yield* db
+        .select()
+        .from(AuditLogTable)
+        .where(eq(AuditLogTable.episode_id, episode.id))
+        .orderBy(desc(AuditLogTable.time_created))
+        .all()
+        .pipe(Effect.orDie)
+      const revisions = yield* db
+        .select({
+          id: NodeRevisionTable.id,
+          node: EpisodeNodeTable.node_key,
+          revision: NodeRevisionTable.revision,
+          actor: NodeRevisionTable.actor,
+          action: NodeRevisionTable.action,
+          reason: NodeRevisionTable.reason,
+          time: NodeRevisionTable.time_created,
+        })
+        .from(NodeRevisionTable)
+        .innerJoin(EpisodeNodeTable, eq(NodeRevisionTable.node_id, EpisodeNodeTable.id))
+        .where(eq(EpisodeNodeTable.episode_id, episode.id))
+        .orderBy(desc(NodeRevisionTable.time_created))
+        .all()
+        .pipe(Effect.orDie)
+      return {
+        clinical: clinical.map((row) => ({
+          id: row.id,
+          kind: row.kind,
+          label: row.label,
+          status: row.status,
+          source: row.source,
+          collectedAt: row.collected_at,
+          negative: row.is_negative,
+          payload: (row.payload ?? {}) as Record<string, unknown>,
+        })),
+        audit: audit.map((row) => ({
+          id: row.id,
+          actor: row.actor,
+          action: row.action,
+          target: row.target,
+          time: row.time_created,
+        })),
+        revisions: revisions.map((row) => ({
+          id: row.id,
+          node: row.node,
+          revision: row.revision,
+          actor: row.actor,
+          action: row.action,
+          reason: row.reason,
+          time: row.time,
+        })),
+      }
+    })
+
+    return handlers.handle("view", view).handle("review", review).handle("amend", amend).handle("evidence", evidence)
   }),
 )
