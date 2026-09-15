@@ -12,22 +12,23 @@ permissions:
 jobs:
   windows-x64:
     name: AcuFlow for Windows x64
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     timeout-minutes: 60
     steps:
       - name: Checkout repository
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
-      # Composite action installs Bun and runs `bun install`.
+      # Composite action installs Bun and runs `bun install`. windows-latest
+      # ships the Visual Studio C++ toolchain needed to build the native deps.
       - name: Setup Bun and install dependencies
         uses: ./.github/actions/setup-bun
 
-      # This is opencode's native build path: `script/build.ts` cross-compiles
-      # every platform from Linux, including the Windows executables. Building
-      # on Linux avoids needing Visual Studio / node-gyp on the Windows runner.
-      - name: Build executables for all platforms
+      # Native Windows build. `windows.icon` in script/build.ts writes the
+      # executable icon, and that is only possible when compiling on Windows.
+      # `--skip-install` avoids the cross-platform @opentui/core reinstall.
+      - name: Build AcuFlow for Windows
         working-directory: packages/opencode
-        run: bun run build
+        run: bun run build --single --skip-install
 
       # Keep the CI artifact for debugging.
       - name: Upload Windows x64 executable
@@ -42,6 +43,7 @@ jobs:
       # page. Tag pushes publish that tag; manual runs update a rolling
       # "latest" release so the download link stays stable.
       - name: Publish to GitHub Release
+        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

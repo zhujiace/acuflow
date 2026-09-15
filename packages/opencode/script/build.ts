@@ -178,7 +178,16 @@ for (const item of targets) {
       target: name.replace(appName, "bun") as any,
       outfile: `dist/${name}/bin/${appName}`,
       execArgv: [`--user-agent=opencode/${Script.version}`, "--use-system-ca", "--"],
-      windows: {},
+      // Windows icon/metadata can only be written when compiling on Windows,
+      // so only set them for a native Windows host build.
+      windows:
+        item.os === "win32" && process.platform === "win32"
+          ? {
+              icon: path.join(import.meta.dirname, "../assets/acuflow.ico"),
+              title: "AcuFlow",
+              description: "AcuFlow — acute abdominal pain clinical decision support",
+            }
+          : {},
     },
     files: {
       [treeSitterWorkerPath]: treeSitterWorker,
@@ -204,7 +213,7 @@ for (const item of targets) {
 
   // Smoke test: only run if binary is for current platform
   if (item.os === process.platform && item.arch === process.arch && !item.abi) {
-    const binaryPath = `dist/${name}/bin/${appName}`
+    const binaryPath = `dist/${name}/bin/${appName}${item.os === "win32" ? ".exe" : ""}`
     console.log(`Running smoke test: ${binaryPath} --version`)
     try {
       const versionOutput = await $`${binaryPath} --version`.text()
