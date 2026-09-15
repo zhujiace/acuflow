@@ -223,16 +223,15 @@ bun run dev
 
 **第 4 步：构建独立可执行文件（原生方式）**
 
-opencode 的原生构建在 **Linux/macOS 上交叉编译所有平台**（包括 Windows），不需要在 Windows 上装 VS：
-
 ```bash
 cd packages/opencode
-bun run build            # 构建所有平台，产物在 dist/opencode-<os>-<arch>/bin/
+bun run build            # 构建所有平台，产物在 dist/acuflow-<os>-<arch>/bin/
 bun run build --single   # 只构建当前平台
 ```
 
 - Windows 可执行文件位于 `packages/opencode/dist/acuflow-windows-x64/bin/acuflow.exe`。
-- CI 里已内置 `.github/workflows/build-windows.yml`：在 `ubuntu-latest` 上交叉编译，把 Windows 可执行文件作为构建产物上传，并**发布到 GitHub Release**，即[第二节](#2-下载可执行文件)供临床下载的那份。
+- **更换图标**：Windows 图标放在 `packages/opencode/assets/acuflow.ico`（建议包含 16/32/48/256 等多尺寸），替换该文件即可换图标，无需改代码。注意：Bun 只在**于 Windows 上编译时**才能把图标写入 exe（在 Linux/macOS 上交叉编译不会带图标）。
+- CI 里已内置 `.github/workflows/build-windows.yml`：在 `windows-latest` 上**原生构建**（以便写入图标），把 Windows 可执行文件作为构建产物上传，并**发布到 GitHub Release**，即[第二节](#2-下载可执行文件)供临床下载的那份。
 
 ### B. 诊疗流程与知识（配置驱动，无需改代码）
 
