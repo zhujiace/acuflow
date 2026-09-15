@@ -1,5 +1,7 @@
 # OpenCode V2 Effect Plugin API
 
+> AcuFlow 说明：本仓库为基于 opencode 的医疗分支（成人非创伤性急腹症诊疗辅助），本文件为 AcuFlow 内置能力的开发者说明，包名与 API 沿用上游 opencode。
+
 The Effect plugin API grants plugins two in-process capabilities:
 
 - `hook` installs behavior at an OpenCode extension point.

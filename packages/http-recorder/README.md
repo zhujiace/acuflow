@@ -1,5 +1,7 @@
 # @opencode-ai/http-recorder
 
+> AcuFlow 说明：本仓库为基于 opencode 的医疗分支（成人非创伤性急腹症诊疗辅助）。以下 `@opencode-ai/*` 能力为 AcuFlow 内置实现，包名沿用上游 opencode。
+
 Record real Effect HTTP and WebSocket traffic once, then replay it from deterministic JSON cassettes.
 
 Use it for provider integrations, retries, polling, multi-step flows, and any test where hand-written HTTP mocks hide too much of the real request shape.

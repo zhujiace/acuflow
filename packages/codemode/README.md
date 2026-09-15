@@ -1,5 +1,7 @@
 # @opencode-ai/codemode
 
+> AcuFlow 说明：本仓库为基于 opencode 的医疗分支（成人非创伤性急腹症诊疗辅助）。以下 `@opencode-ai/*` 能力为 AcuFlow 内置实现，包名沿用上游 opencode。
+
 Effect-native confined code execution over explicit, schema-described tools.
 
 CodeMode lets a model write a small JavaScript program that can call only the tools supplied by the host. The program can sequence calls, transform plain data, branch, loop, and run independent calls in parallel without receiving ambient filesystem, process, network, module, or application authority.

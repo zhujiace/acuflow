@@ -1,5 +1,7 @@
 # @opencode-ai/httpapi-codegen
 
+> AcuFlow 说明：本仓库为基于 opencode 的医疗分支（成人非创伤性急腹症诊疗辅助）。以下 `@opencode-ai/*` 能力为 AcuFlow 内置实现，包名沿用上游 opencode。
+
 Build-time source generation for domain-oriented Promise and Effect APIs derived directly from `HttpApi` and Effect Schema contracts.
 
 The package is private while its API is explored. Its tests are the executable specification for the generator. It must remain independent of OpenCode Core and use synthetic `HttpApi` fixtures.

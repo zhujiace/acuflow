@@ -1,5 +1,7 @@
 # @opencode-ai/llm
 
+> AcuFlow 说明：本仓库为基于 opencode 的医疗分支（成人非创伤性急腹症诊疗辅助）。以下 `@opencode-ai/*` 能力为 AcuFlow 内置实现，包名沿用上游 opencode。
+
 Schema-first LLM core for opencode. One typed request, response, event, and tool language; provider quirks live in adapters, not in calling code.
 
 ```ts
