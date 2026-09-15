@@ -12,32 +12,27 @@ permissions:
 jobs:
   windows-x64:
     name: AcuFlow for Windows x64
-    runs-on: windows-latest
-    timeout-minutes: 45
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - name: Checkout repository
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       # Composite action installs Bun and runs `bun install`.
-      # windows-latest ships the Visual Studio C++ toolchain needed to build
-      # native deps (node-pty, tree-sitter-*), so no local VS is required.
       - name: Setup Bun and install dependencies
         uses: ./.github/actions/setup-bun
 
-      # Native opencode build: produces a self-contained executable that embeds
-      # the web UI from packages/app.
-      - name: Build AcuFlow for the current platform
+      # This is opencode's native build path: `script/build.ts` cross-compiles
+      # every platform from Linux, including the Windows executables. Building
+      # on Linux avoids needing Visual Studio / node-gyp on the Windows runner.
+      - name: Build executables for all platforms
         working-directory: packages/opencode
-        run: bun run build --single
+        run: bun run build
 
-      - name: Show build output
-        working-directory: packages/opencode
-        run: Get-ChildItem -Recurse dist | Select-Object FullName
-
-      - name: Upload Windows executable
+      - name: Upload Windows x64 executable
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: acuflow-windows-x64
-          path: packages/opencode/dist/**
+          path: packages/opencode/dist/opencode-windows-x64/bin/**
           if-no-files-found: error
           retention-days: 30
