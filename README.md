@@ -3,7 +3,7 @@
 > 面向成人**非创伤性急腹症**（急性腹痛）的固定流程临床决策辅助系统。
 > AcuFlow 与执业医师协同工作：系统按固定流程采集信息、提示缺失项、给出建议；**最终判断与决策始终由医生完成**。
 
-本仓库是基于开源项目 [opencode](https://github.com/anomalyco/opencode) 二次开发的医疗分支（`minimal-agent` 构建）。它保留 opencode 的终端交互（TUI）以及 agent / 技能 / 工具 / 权限框架，并将工作流替换为 AcuFlow 的急腹症诊疗流程。
+本仓库是基于开源项目 [opencode](https://github.com/anomalyco/opencode) 二次开发的医疗分支。它保留 opencode 的终端交互（TUI）以及 agent / 技能 / 工具 / 权限框架，并将工作流替换为 AcuFlow 的急腹症诊疗流程。
 
 > ⚠️ **免责声明**
 > AcuFlow 仅用于科研、教学与流程演示，**不能替代医生的临床判断**，不得作为唯一的诊疗依据。
@@ -95,7 +95,7 @@ bun --version
 - 若已获得 Git 访问权限：
 
   ```bash
-  git clone -b minimal-agent https://github.com/zhujiace/acuflow.git acuflow
+  git clone https://github.com/zhujiace/acuflow.git acuflow
   ```
 
 - 或直接解压获取到的 `acuflow.zip`（假设解压到 `acuflow` 文件夹）。
