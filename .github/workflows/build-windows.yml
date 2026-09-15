@@ -24,10 +24,11 @@ jobs:
       - name: Setup Bun and install dependencies
         uses: ./.github/actions/setup-bun
 
-      # packages/app was stripped from this build, so skip embedding the web UI.
+      # Native opencode build: produces a self-contained executable that embeds
+      # the web UI from packages/app.
       - name: Build AcuFlow for the current platform
         working-directory: packages/opencode
-        run: bun run build --single --skip-embed-web-ui
+        run: bun run build --single
 
       - name: Show build output
         working-directory: packages/opencode
