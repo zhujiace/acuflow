@@ -1,8 +1,7 @@
+- This is the stripped `minimal-agent` build of AcuFlow (branch `minimal-agent`; remote `source` = local `../acuflow`). The V2 client stack (`packages/client`, `packages/sdk-next`) and `packages/{app,web,console,desktop,enterprise,slack,stats,storybook,session-ui}` are intentionally absent, so upstream `packages/client`/`sdk-next` codegen instructions do not apply here.
 - To regenerate the legacy JavaScript SDK, run `./packages/sdk/js/script/build.ts`.
-- After changing the public Protocol or Server `HttpApi`, run `bun run generate` from `packages/client`. Do not edit `src/generated` or `src/generated-effect` directly.
-- Keep runtime dependencies directed from Schema to Core and Protocol, then from Core and Protocol to Server. Client runtime code may depend on Schema and Protocol but never Core or Server; `sdk-next` composes Client, Core, and Server.
-- The default branch in this repo is `dev`.
-- Local `main` ref may not exist; use `dev` or `origin/dev` for diffs.
+- Keep runtime dependencies directed from Schema to Core and Protocol, then from Core and Protocol to Server.
+- AcuFlow medical domain: schema `packages/schema/src/medical*.ts`; services `packages/core/src/medical/`; tools `packages/opencode/src/tool/medical.ts`; TUI `packages/tui/src/medical/`; flow/knowledge config in `.opencode/acuflow/` and `.opencode/agent/`.
 
 ## Branch Names
 
