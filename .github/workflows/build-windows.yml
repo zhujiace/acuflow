@@ -1,0 +1,42 @@
+name: build-windows
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  windows-x64:
+    name: AcuFlow for Windows x64
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      # Composite action installs Bun and runs `bun install`.
+      # windows-latest ships the Visual Studio C++ toolchain needed to build
+      # native deps (node-pty, tree-sitter-*), so no local VS is required.
+      - name: Setup Bun and install dependencies
+        uses: ./.github/actions/setup-bun
+
+      # packages/app was stripped from this build, so skip embedding the web UI.
+      - name: Build AcuFlow for the current platform
+        working-directory: packages/opencode
+        run: bun run build --single --skip-embed-web-ui
+
+      - name: Show build output
+        working-directory: packages/opencode
+        run: Get-ChildItem -Recurse dist | Select-Object FullName
+
+      - name: Upload Windows executable
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: acuflow-windows-x64
+          path: packages/opencode/dist/**
+          if-no-files-found: error
+          retention-days: 30
