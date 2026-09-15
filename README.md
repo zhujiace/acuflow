@@ -71,15 +71,14 @@
 
 ### 2. 下载可执行文件
 
-AcuFlow 已经打包成**单个可执行文件**，直接下载即可使用，无需安装开发环境。
+AcuFlow 已经打包成**单个可执行文件**，从 **Releases** 页面直接下载即可，无需安装开发环境。
 
-1. 打开本仓库的 **GitHub 页面** → 顶部进入 **Actions**（操作）标签。
-2. 左侧选择 **`build-windows`** 工作流，点进**最近一次成功（带绿色 ✓）的运行**。
-3. 在页面底部的 **Artifacts**（构建产物）区域，点击 **`acuflow-windows-x64`** 下载（得到一个 zip 压缩包）。
-4. 解压 zip，得到 **`acuflow.exe`**（这就是 AcuFlow 程序）。
-5. 建议把它放进一个固定文件夹，例如 `D:\AcuFlow\`。
+1. 打开本仓库的 **Releases** 页面（仓库首页右侧的 **Releases**，或访问 `<仓库地址>/releases`）。
+2. 在**最新发布**的 **Assets** 列表里，点击 **`acuflow.exe`** 下载。
+3. 建议把它放进一个固定文件夹，例如 `D:\AcuFlow\`。
 
 > 小技巧：右键 `acuflow.exe` → 「发送到」→「桌面快捷方式」，以后从桌面双击即可。
+> 若 Releases 里暂时没有，也可在 **Actions → `build-windows` → 最近一次成功运行 → Artifacts** 下载 `acuflow-windows-x64`，解压同样得到 `acuflow.exe`。
 
 ### 3. 启动
 
@@ -233,7 +232,7 @@ bun run build --single   # 只构建当前平台
 ```
 
 - Windows 可执行文件位于 `packages/opencode/dist/acuflow-windows-x64/bin/acuflow.exe`。
-- CI 里已内置 `.github/workflows/build-windows.yml`：在 `ubuntu-latest` 上交叉编译并把 Windows 可执行文件作为构建产物上传，即[第二节](#2-下载可执行文件)供临床下载的那份。
+- CI 里已内置 `.github/workflows/build-windows.yml`：在 `ubuntu-latest` 上交叉编译，把 Windows 可执行文件作为构建产物上传，并**发布到 GitHub Release**，即[第二节](#2-下载可执行文件)供临床下载的那份。
 
 ### B. 诊疗流程与知识（配置驱动，无需改代码）
 
@@ -419,7 +418,7 @@ agent: acuflow
 | 医学域回归测试 | `cd packages/core && bun test test/medical.test.ts test/medical-scenario.test.ts` |
 | 数据库迁移 | `cd packages/core && bun run script/migration.ts --name <name>`（校验用 `--check`） |
 | 构建可执行文件 | `cd packages/opencode && bun run build`（原生交叉编译全平台）或 `bun run build --single`（当前平台），产物在 `packages/opencode/dist/` |
-| 构建并上传 Windows 可执行文件 | 触发 GitHub Actions 的 `build-windows` 工作流（在 `ubuntu-latest` 交叉编译） |
+| 构建并发布 Windows 可执行文件 | 触发 GitHub Actions 的 `build-windows` 工作流（在 `ubuntu-latest` 交叉编译，上传 Artifact 并发布到 Release） |
 
 注意事项：
 

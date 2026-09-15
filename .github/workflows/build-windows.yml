@@ -29,6 +29,7 @@ jobs:
         working-directory: packages/opencode
         run: bun run build
 
+      # Keep the CI artifact for debugging.
       - name: Upload Windows x64 executable
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
@@ -36,3 +37,22 @@ jobs:
           path: packages/opencode/dist/acuflow-windows-x64/bin/**
           if-no-files-found: error
           retention-days: 30
+
+      # Publish the executable so clinicians can download it from the Releases
+      # page. Tag pushes publish that tag; manual runs update a rolling
+      # "latest" release so the download link stays stable.
+      - name: Publish to GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${{ github.ref_type == 'tag' && github.ref_name || 'latest' }}"
+          ASSET="packages/opencode/dist/acuflow-windows-x64/bin/acuflow.exe"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$ASSET" --clobber
+          else
+            gh release create "$TAG" "$ASSET" \
+              --title "AcuFlow ${TAG}" \
+              --notes "AcuFlow 急腹症诊疗辅助系统（Windows x64 可执行文件）。
+
+下载 acuflow.exe，双击或在所在文件夹运行 .\\acuflow.exe 即可。首次运行若提示「Windows 已保护你的电脑」，点「更多信息」→「仍要运行」。首次使用需在界面里用 /connect 配置大模型 API Key。详见仓库 README。"
+          fi
