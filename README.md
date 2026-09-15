@@ -76,20 +76,20 @@ AcuFlow 已经打包成**单个可执行文件**，直接下载即可使用，�
 1. 打开本仓库的 **GitHub 页面** → 顶部进入 **Actions**（操作）标签。
 2. 左侧选择 **`build-windows`** 工作流，点进**最近一次成功（带绿色 ✓）的运行**。
 3. 在页面底部的 **Artifacts**（构建产物）区域，点击 **`acuflow-windows-x64`** 下载（得到一个 zip 压缩包）。
-4. 解压 zip，得到 **`opencode.exe`**（这就是 AcuFlow 程序）。
+4. 解压 zip，得到 **`acuflow.exe`**（这就是 AcuFlow 程序）。
 5. 建议把它放进一个固定文件夹，例如 `D:\AcuFlow\`。
 
-> 小技巧：右键 `opencode.exe` → 「发送到」→「桌面快捷方式」，以后从桌面双击即可。
+> 小技巧：右键 `acuflow.exe` → 「发送到」→「桌面快捷方式」，以后从桌面双击即可。
 
 ### 3. 启动
 
-**方式一（推荐，显示更好）**：在 `opencode.exe` 所在的文件夹空白处右键 → **「在终端中打开」**，然后输入下面命令并回车：
+**方式一（推荐，显示更好）**：在 `acuflow.exe` 所在的文件夹空白处右键 → **「在终端中打开」**，然后输入下面命令并回车：
 
 ```powershell
-.\opencode.exe
+.\acuflow.exe
 ```
 
-**方式二（最简单）**：直接**双击** `opencode.exe`。
+**方式二（最简单）**：直接**双击** `acuflow.exe`。
 
 > 首次运行若弹出蓝色的「Windows 已保护你的电脑」提示：点击**「更多信息」→「仍要运行」**即可（该程序未做商业签名，属正常现象）。
 
@@ -171,7 +171,7 @@ AcuFlow 需要连接一个大模型服务（医院内网关或公有云均可）
 |---|---|
 | 首次运行提示「Windows 已保护你的电脑」 | 点「更多信息」→「仍要运行」（程序未做商业签名，正常现象） |
 | 启动后没有模型、无法回答 | 输入 `/connect` 配置提供商与 API Key；再输入 `/models` 选择模型 |
-| 双击后窗口一闪而过 | 换用「方式一」：在该文件夹右键 →「在终端中打开」→ 运行 `.\opencode.exe` |
+| 双击后窗口一闪而过 | 换用「方式一」：在该文件夹右键 →「在终端中打开」→ 运行 `.\acuflow.exe` |
 | 一直提示「待补充信息」 | 这是正常的门控行为，按清单逐项补充即可；确实拿不到的信息直接说明无法获取 |
 | 想让系统直接给出结论 | 流程强制医生确认，这是安全设计；门控细节可在配置中调整 |
 | 想更正中途的结论 | 对**未确认**节点用「驳回 / 修改」；对**已确认**节点用「回溯修改」 |
@@ -232,7 +232,7 @@ bun run build            # 构建所有平台，产物在 dist/opencode-<os>-<ar
 bun run build --single   # 只构建当前平台
 ```
 
-- Windows 可执行文件位于 `packages/opencode/dist/opencode-windows-x64/bin/opencode.exe`。
+- Windows 可执行文件位于 `packages/opencode/dist/acuflow-windows-x64/bin/acuflow.exe`。
 - CI 里已内置 `.github/workflows/build-windows.yml`：在 `ubuntu-latest` 上交叉编译并把 Windows 可执行文件作为构建产物上传，即[第二节](#2-下载可执行文件)供临床下载的那份。
 
 ### B. 诊疗流程与知识（配置驱动，无需改代码）
