@@ -47,15 +47,20 @@ export function Logo() {
   }
 
   return (
-    <box>
-      <For each={logo.left}>
-        {(line, index) => (
-          <box flexDirection="row" gap={1}>
-            <box flexDirection="row">{renderLine(line, theme.textMuted, false)}</box>
-            <box flexDirection="row">{renderLine(logo.right[index()], theme.text, true)}</box>
-          </box>
-        )}
-      </For>
+    <box alignItems="center">
+      <box>
+        <For each={logo.left}>
+          {(line, index) => (
+            <box flexDirection="row" gap={1}>
+              <box flexDirection="row">{renderLine(line, theme.text, true)}</box>
+              <box flexDirection="row">{renderLine(logo.right[index()], theme.textMuted, false)}</box>
+            </box>
+          )}
+        </For>
+      </box>
+      <text fg={theme.textMuted} marginTop={1} selectable={false}>
+        AcuFlow · 医疗诊断辅助系统
+      </text>
     </box>
   )
 }
