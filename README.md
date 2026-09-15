@@ -14,8 +14,8 @@
 ## 目录
 
 - [一、项目简介](#一项目简介)
-- [二、给临床医护人员：安装与使用教程](#二给临床医护人员安装与使用教程)
-- [三、给医学开发人员：流程 / 提示词 / 知识库配置接口](#三给医学开发人员流程--提示词--知识库配置接口)
+- [二、给临床医护人员：下载与使用](#二给临床医护人员下载与使用)
+- [三、给医学开发人员：从源码运行与流程配置](#三给医学开发人员从源码运行与流程配置)
 - [四、本地开发与测试](#四本地开发与测试)
 - [五、许可与出处](#五许可与出处)
 
@@ -55,7 +55,7 @@
 
 ---
 
-## 二、给临床医护人员：安装与使用教程
+## 二、给临床医护人员：下载与使用
 
 > 本节假设你**不熟悉计算机操作**。请严格按顺序执行；每一步都给出了「预期结果」，若与预期不符，请查阅本节末尾的[常见问题](#9-常见问题)。
 
@@ -63,73 +63,45 @@
 
 | 项目 | 要求 |
 |---|---|
-| 操作系统 | Windows 10/11、macOS 或 Linux |
+| 操作系统 | Windows 10/11（推荐）、macOS 或 Linux |
 | 网络 | 需要联网（访问大模型服务） |
 | 显示 | 建议 15 英寸以上屏幕，终端窗口尽量全屏 |
-| 其他 | 无需额外安装数据库等组件（内置本地存储） |
+| 终端 | Windows 上推荐使用 **Windows Terminal**（显示更清晰） |
+| 其他 | 无需安装 Bun / WSL / 数据库等任何额外组件 |
 
-### 2. 安装
+### 2. 下载可执行文件
 
-**第 1 步：安装 Bun（运行时环境，只需一次）**
+AcuFlow 已经打包成**单个可执行文件**，直接下载即可使用，无需安装开发环境。
 
-- Windows：打开「开始菜单」搜索 **PowerShell** → 右键「以管理员身份运行」→ 粘贴并回车：
+1. 打开本仓库的 **GitHub 页面** → 顶部进入 **Actions**（操作）标签。
+2. 左侧选择 **`build-windows`** 工作流，点进**最近一次成功（带绿色 ✓）的运行**。
+3. 在页面底部的 **Artifacts**（构建产物）区域，点击 **`acuflow-windows-x64`** 下载（得到一个 zip 压缩包）。
+4. 解压 zip，得到 **`opencode.exe`**（这就是 AcuFlow 程序）。
+5. 建议把它放进一个固定文件夹，例如 `D:\AcuFlow\`。
 
-  ```powershell
-  powershell -c "irm bun.sh/install.ps1 | iex"
-  ```
+> 小技巧：右键 `opencode.exe` → 「发送到」→「桌面快捷方式」，以后从桌面双击即可。
 
-- macOS / Linux：打开「终端」→ 粘贴并回车：
+### 3. 启动
 
-  ```bash
-  curl -fsSL https://bun.sh/install | bash
-  ```
+**方式一（推荐，显示更好）**：在 `opencode.exe` 所在的文件夹空白处右键 → **「在终端中打开」**，然后输入下面命令并回车：
 
-安装完成后**关闭并重新打开**终端，输入以下命令验证，应显示类似 `1.3.x`：
-
-```bash
-bun --version
+```powershell
+.\opencode.exe
 ```
 
-**第 2 步：获取 AcuFlow 代码**
+**方式二（最简单）**：直接**双击** `opencode.exe`。
 
-- 若已获得 Git 访问权限：
+> 首次运行若弹出蓝色的「Windows 已保护你的电脑」提示：点击**「更多信息」→「仍要运行」**即可（该程序未做商业签名，属正常现象）。
 
-  ```bash
-  git clone https://github.com/zhujiace/acuflow.git acuflow
-  ```
+看到带有 **ACUFLOW** 字样和副标题「AcuFlow · 医疗诊断辅助系统」的欢迎界面，即启动成功。
 
-- 或直接解压获取到的 `acuflow.zip`（假设解压到 `acuflow` 文件夹）。
-
-**第 3 步：安装依赖**
-
-```bash
-cd acuflow
-bun install
-```
-
-> 首次执行会下载依赖，视网络情况需要几分钟。看到没有红色报错即成功。
-
-### 3. 配置大模型（首次使用）
+### 4. 配置大模型（首次使用）
 
 AcuFlow 需要连接一个大模型服务（医院内网关或公有云均可）。配置只需做一次：
 
-1. 启动 AcuFlow（见下一步），你会看到一个深色终端界面。
-2. 在底部输入框输入 `/connect` 并回车，选择你的模型提供商，按屏幕提示粘贴 **API Key**。
-3. 输入 `/models`，从列表中选择要使用的模型。
-4. 配置会自动保存，下次启动无需重复。
-
-### 4. 启动
-
-在 `acuflow` 文件夹中执行：
-
-```bash
-bun run dev
-```
-
-看到带有 **ACUFLOW** 字样和副标题「AcuFlow · 医疗诊断辅助系统」的欢迎界面即启动成功。
-
-> 提示：默认 agent 已经是 AcuFlow 主协调助手，无需手动切换。
-> （可选）也可以构建独立可执行文件：进入 `packages/opencode` 目录后执行 `bun run build --single`，产物位于 `packages/opencode/dist/` 下。
+1. 在底部输入框输入 `/connect` 并回车，选择你的模型提供商，按屏幕提示粘贴 **API Key**。
+2. 输入 `/models`，从列表中选择要使用的模型。
+3. 配置会自动保存，下次启动无需重复。
 
 ### 5. 开始一次诊疗（episode）
 
@@ -197,7 +169,9 @@ bun run dev
 
 | 现象 | 处理办法 |
 |---|---|
+| 首次运行提示「Windows 已保护你的电脑」 | 点「更多信息」→「仍要运行」（程序未做商业签名，正常现象） |
 | 启动后没有模型、无法回答 | 输入 `/connect` 配置提供商与 API Key；再输入 `/models` 选择模型 |
+| 双击后窗口一闪而过 | 换用「方式一」：在该文件夹右键 →「在终端中打开」→ 运行 `.\opencode.exe` |
 | 一直提示「待补充信息」 | 这是正常的门控行为，按清单逐项补充即可；确实拿不到的信息直接说明无法获取 |
 | 想让系统直接给出结论 | 流程强制医生确认，这是安全设计；门控细节可在配置中调整 |
 | 想更正中途的结论 | 对**未确认**节点用「驳回 / 修改」；对**已确认**节点用「回溯修改」 |
@@ -207,11 +181,65 @@ bun run dev
 
 ---
 
-## 三、给医学开发人员：流程 / 提示词 / 知识库配置接口
+## 三、给医学开发人员：从源码运行与流程配置
+
+### A. 从源码运行（开发环境）
+
+**第 1 步：安装 Bun（运行时环境，只需一次）**
+
+- Windows：打开「开始菜单」搜索 **PowerShell** → 运行，粘贴并回车：
+
+  ```powershell
+  powershell -c "irm bun.sh/install.ps1 | iex"
+  ```
+
+- macOS / Linux：打开「终端」→ 粘贴并回车：
+
+  ```bash
+  curl -fsSL https://bun.sh/install | bash
+  ```
+
+安装完成后**关闭并重新打开**终端，输入以下命令验证，应显示类似 `1.3.x`：
+
+```bash
+bun --version
+```
+
+**第 2 步：获取代码并安装依赖**
+
+```bash
+git clone https://github.com/zhujiace/acuflow.git acuflow
+cd acuflow
+bun install
+```
+
+> 首次执行会下载依赖，视网络情况需要几分钟。看到没有红色报错即成功。
+> ⚠️ 在 **Windows 上从源码安装**会编译原生依赖（`node-pty`、`tree-sitter-*`），需要 **Visual Studio「使用 C++ 的桌面开发」工作负载**；若不想装，可用 CI 产物（见下）或在 Linux/macOS 上构建。
+
+**第 3 步：启动 TUI**
+
+```bash
+bun run dev
+```
+
+**第 4 步：构建独立可执行文件（原生方式）**
+
+opencode 的原生构建在 **Linux/macOS 上交叉编译所有平台**（包括 Windows），不需要在 Windows 上装 VS：
+
+```bash
+cd packages/opencode
+bun run build            # 构建所有平台，产物在 dist/opencode-<os>-<arch>/bin/
+bun run build --single   # 只构建当前平台
+```
+
+- Windows 可执行文件位于 `packages/opencode/dist/opencode-windows-x64/bin/opencode.exe`。
+- CI 里已内置 `.github/workflows/build-windows.yml`：在 `ubuntu-latest` 上交叉编译并把 Windows 可执行文件作为构建产物上传，即[第二节](#2-下载可执行文件)供临床下载的那份。
+
+### B. 诊疗流程与知识（配置驱动，无需改代码）
 
 AcuFlow 的诊疗流程与知识**由配置文件定义，无需改代码**。所有配置文件位于项目根目录的 `.opencode/` 与 `docs/` 下。
 
-### 配置目录总览
+#### 配置目录总览
 
 ```
 .opencode/
@@ -230,7 +258,7 @@ docs/acuflow-scenarios/acute-appendicitis.md     # 人工测试用例
 packages/core/test/medical-scenario.test.ts      # 可执行回归测试
 ```
 
-### ① 节点流程：`.opencode/acuflow/flow.json`
+#### ① 节点流程：`.opencode/acuflow/flow.json`
 
 `episode_start` 时会读取本文件并绑定到本次 episode；文件不存在时使用内置默认流程。每个节点字段：
 
@@ -260,7 +288,7 @@ packages/core/test/medical-scenario.test.ts      # 可执行回归测试
 
 > 修改 `flow.json` 后，**新建 episode 时生效**（已开始的 episode 保持其绑定的流程）。
 
-### ② 节点 Prompt：`.opencode/agent/<node>.md`
+#### ② 节点 Prompt：`.opencode/agent/<node>.md`
 
 每个节点可有一个专用 subagent，文件正文即该节点的提示词，frontmatter 控制权限：
 
@@ -285,7 +313,7 @@ permission:
 - 想在某节点使用专用 subagent，把 `flow.json` 中该节点的 `entryAgent` 改为对应名称。
 - **主协调 agent** 的提示词是内置的：`packages/opencode/src/agent/prompt/acuflow.txt`。修改它属于改代码，需要重新构建 / 重启。
 
-### ③ 节点知识库：`.opencode/skills/<node>-knowledge/SKILL.md`
+#### ③ 节点知识库：`.opencode/skills/<node>-knowledge/SKILL.md`
 
 每个节点对应一个技能目录，`SKILL.md` 的 frontmatter 必须包含 `name` 与 `description`：
 
@@ -308,7 +336,7 @@ description: 分诊/首次接诊节点的知识：危险信号优先识别、主
 - 节点 subagent 通过 `permission.skill` 白名单**只加载本节点的知识**（见上一条示例的 `triage-knowledge: allow`）。
 - 现有技能：`triage-knowledge`、`history-exam-knowledge`、`labs-knowledge`、`imaging-consult-knowledge`、`treatment-observation-knowledge`、`disposition-knowledge`。
 
-### ④ 共享临床指南：`.opencode/acuflow/guidelines/*.md`
+#### ④ 共享临床指南：`.opencode/acuflow/guidelines/*.md`
 
 这些文件会被**每一轮注入**系统上下文（不区分节点）。适合放跨节点的通用内容，如危险信号、鉴别诊断、治疗范围等：
 
@@ -325,7 +353,7 @@ description: 分诊/首次接诊节点的知识：危险信号优先识别、主
 "instructions": ["docs/acuflow-guidelines/*.md", ".opencode/acuflow/guidelines/*.md"]
 ```
 
-### ⑤ 手动命令：`.opencode/command/<name>.md`
+#### ⑤ 手动命令：`.opencode/command/<name>.md`
 
 在输入框输入 `/triage`、`/labs` 等可让 agent 聚焦当前或指定节点：
 
@@ -341,7 +369,7 @@ agent: acuflow
 
 现有命令：`/triage`、`/history`、`/labs`、`/imaging`、`/treatment`、`/disposition`、`/acuflow-status`。
 
-### ⑥ 主协调 Prompt 与影像接口
+#### ⑥ 主协调 Prompt 与影像接口
 
 - **主协调 Prompt**：`packages/opencode/src/agent/prompt/acuflow.txt`（内置）。它规定了「每轮必须调用 `episode_status`、信息不全只列待补充、信息齐全才提交草案、只由 `flow_review` 推进」等硬性规则。
 - **影像分析接口**：`imaging_analyze` 工具已提供，但**默认不启用**。仅当 `.opencode/acuflow/imaging.json` 中 `enabled: true` 且配置了 `endpoint` 时才会真正调用影像模型；否则只返回“未启用”，不做任何外部调用。
@@ -357,7 +385,7 @@ agent: acuflow
 }
 ```
 
-### ⑦ 改动如何生效 & 如何验证
+#### ⑦ 改动如何生效 & 如何验证
 
 - `flow.json`：**新建 episode 时**读取生效。
 - `agent/*.md`、`skills/*/SKILL.md`、`command/*.md`、`guidelines/*.md`：新会话或下一次注入时生效；不确定时重启 AcuFlow。
@@ -370,7 +398,7 @@ agent: acuflow
 
 - 人工走查脚本见 `docs/acuflow-scenarios/acute-appendicitis.md`（转移性右下腹痛 / 急性阑尾炎的完整对话样例）。
 
-### 数据与审计
+#### 数据与审计
 
 - 患者、节点、原始证据、审计日志、修订记录持久化在数据库（Drizzle / SQLite）。
 - 审计与证据可通过 `medical_audit`、`clinical_query` 工具查询；TUI 侧读取服务端 `/medical/view` 与 `/medical/evidence`。
@@ -390,7 +418,8 @@ agent: acuflow
 | 类型检查 | `bun turbo typecheck`（或在某个包目录内 `bun typecheck`，使用 `tsgo`，不要用 `tsc`） |
 | 医学域回归测试 | `cd packages/core && bun test test/medical.test.ts test/medical-scenario.test.ts` |
 | 数据库迁移 | `cd packages/core && bun run script/migration.ts --name <name>`（校验用 `--check`） |
-| 构建独立可执行文件 | `cd packages/opencode && bun run build --single`，产物在 `packages/opencode/dist/` |
+| 构建可执行文件 | `cd packages/opencode && bun run build`（原生交叉编译全平台）或 `bun run build --single`（当前平台），产物在 `packages/opencode/dist/` |
+| 构建并上传 Windows 可执行文件 | 触发 GitHub Actions 的 `build-windows` 工作流（在 `ubuntu-latest` 交叉编译） |
 
 注意事项：
 
