@@ -1,4 +1,6 @@
-# opencode VS Code Extension
+# AcuFlow 内置：opencode VS Code Extension
+
+> AcuFlow 说明：本仓库是基于 opencode 的医疗分支，用于成人非创伤性急腹症的固定流程诊疗辅助。本文件描述随仓库内置的 opencode VS Code 扩展，属于开发者工具，不参与临床诊疗流程。
 
 A Visual Studio Code extension that integrates [opencode](https://opencode.ai) directly into your development workflow.
 

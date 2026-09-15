@@ -1,5 +1,7 @@
 # Mintlify Starter Kit
 
+> AcuFlow 说明：本仓库为基于 opencode 的医疗分支（成人非创伤性急腹症诊疗辅助）。本目录为 AcuFlow 文档站点的 Mintlify 配置。
+
 Use the starter kit to get your docs deployed and ready to customize.
 
 Click the green **Use this template** button at the top of this repo to copy the Mintlify starter kit. The starter kit contains examples with

@@ -1,5 +1,7 @@
 # CI containers
 
+> AcuFlow 说明：本仓库为基于 opencode 的医疗分支（成人非创伤性急腹症诊疗辅助）。本目录为供 GitHub Actions 使用的预构建 CI 容器。
+
 Prebuilt images intended to speed up GitHub Actions jobs by baking in
 large, slow-to-install dependencies. These are designed for Linux jobs
 that can use `job.container` in workflows.

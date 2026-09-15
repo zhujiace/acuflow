@@ -1,4 +1,6 @@
-# opencode GitHub Action
+# AcuFlow 内置：opencode GitHub Action
+
+> AcuFlow 说明：本仓库是基于 opencode 的医疗分支，用于成人非创伤性急腹症的固定流程诊疗辅助。本文件描述随仓库内置的 opencode GitHub Action，属于开发者协作能力，不参与临床诊疗流程。
 
 A GitHub Action that integrates [opencode](https://opencode.ai) directly into your GitHub workflow.
 

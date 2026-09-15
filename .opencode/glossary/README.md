@@ -1,5 +1,7 @@
 # Locale Glossaries
 
+> AcuFlow 说明：本仓库为基于 opencode 的医疗分支。本目录为文档本地化术语表（沿用 opencode 上游约定）。
+
 Use this folder for locale-specific translation guidance that supplements `.opencode/agent/translator.md`.
 
 The global glossary in `translator.md` remains the source of truth for shared do-not-translate terms (commands, code, paths, product names, etc.). These locale files capture community learnings about phrasing and terminology preferences.
