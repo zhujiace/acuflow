@@ -50,9 +50,5 @@ jobs:
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "$ASSET" --clobber
           else
-            gh release create "$TAG" "$ASSET" \
-              --title "AcuFlow ${TAG}" \
-              --notes "AcuFlow 急腹症诊疗辅助系统（Windows x64 可执行文件）。
-
-下载 acuflow.exe，双击或在所在文件夹运行 .\\acuflow.exe 即可。首次运行若提示「Windows 已保护你的电脑」，点「更多信息」→「仍要运行」。首次使用需在界面里用 /connect 配置大模型 API Key。详见仓库 README。"
+            gh release create "$TAG" "$ASSET" --title "AcuFlow ${TAG}" --notes "AcuFlow 急腹症诊疗辅助系统（Windows x64 可执行文件）。下载 acuflow.exe 后双击或在该文件夹运行；首次运行若提示 Windows 已保护你的电脑，选择仍要运行；首次使用用 /connect 配置大模型 API Key。详见仓库 README。"
           fi
